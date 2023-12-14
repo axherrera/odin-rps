@@ -1,15 +1,51 @@
+//Constants
+const ROCK = 1;
+const PAPER = 2;
+const SCISSORS = 3;
+
+const PLAYER = "Player";
+const COMPUTER = 'Computer';
+
+//Player score trackers
+var computer = 0;
+var player = 0;
+
+//Query selectors
+const popup = document.querySelector(".popup");
+const startButton = document.querySelector(".btn");
+
+const computerScore = document.querySelectorAll(".score.computer")[0];
+const playerScore = document.querySelectorAll(".score.player")[0];
+
+const computerDisplay = document.querySelectorAll(".display.c")[0];
+const playerDisplay = document.querySelectorAll(".display.p1")[0];
+
+const rockButton = document.querySelector("#rock");
+const paperButton = document.querySelector("#paper");
+const scissorsButton = document.querySelector("#scissors");
+
+//Game related functions
 function getComputerChoice(){
     return Math.floor(Math.random() * 3 + 1)
+}
+
+function checkScore(score, side){
+    if(score==3){
+        alert(`${side} is the winner!`)
+        computerScore.textContent = "0";
+        playerScore.textContent = "0";
+    }
+    
 }
 
 function toString(numChoice){
     switch (numChoice){
         case 1:
-            return "Rock";
+            return "🪨";
         case 2:
-            return "Paper";
+            return "📄";
         case 3:
-            return "Scissors";
+            return "✂️";
     }
 }
 
@@ -24,47 +60,80 @@ function toNum(stringChoice){
     }
 }
 
-function playRound(){
-    const playerChoice = toNum(prompt("Choose rock, paper, or scissors!"))
+function updateScore(isPlayerPoint){
+    if(isPlayerPoint){
+        let updatedScore = parseInt(playerScore.textContent)+1;
+        playerScore.textContent = updatedScore;
+
+    }
+    else{
+        let updatedScore = parseInt(computerScore.textContent)+1;
+        computerScore.textContent = updatedScore;
+    }
+}
+
+function playRound(playerSelection, computerDisplay){
     const computerChoice = getComputerChoice();
-    var result = (playerChoice) - computerChoice;
+    computerDisplay.textContent = toString(computerChoice)
+    let result = (playerSelection) - computerChoice;
     if(result == 0){
-        console.log(`${toString(computerChoice)} and ${toString(playerChoice)}...Its a tie, play again`)
-        return playRound();
+        return -1;
     }
     else if( result == 2 || result == -1){
-        console.log(`Sorry, you lost. ${toString(computerChoice)} beats ${toString(playerChoice)}!`)
         return 0;
     }
     else
-        console.log(`You win!! ${toString(playerChoice)} beats ${toString(computerChoice)}!`)
         return 1;
 }
 
-function game(){
-    var computer = 0;
-    var player = 0;
-    var winner;
-    for(let i = 0; i<5; i++){
-        console.log(`Round ${i+1}`);
-        result = playRound();
-        if(result)
-            player++;
-        else
-            computer++;
-        if(computer ==3 || player ==3){
-            winner = computer == 3 || player == 3
-            break
-        }
+//All Event Listeners
+rockButton.addEventListener('click', ()=>{
+    playerDisplay.textContent = "🪨";
+    let result = playRound(ROCK, computerDisplay)
+    if(result==1) {
+        updateScore(true);
+        player++;
+        checkScore(player, PLAYER); 
     }
+    else if(result==0){
+        updateScore(false);
+        computer++;
+        checkScore(computer, COMPUTER); 
+    }
+    else return;
+});
+paperButton.addEventListener('click', ()=>{
+    playerDisplay.textContent = "📄";
+    let result = playRound(PAPER, computerDisplay)
+    if(result==1) {
+        updateScore(true);
+        player++;
+        checkScore(player, PLAYER); 
+    }
+    else if(result==0){
+        updateScore(false);
+        computer++;
+        checkScore(computer, COMPUTER);
+    }
+    else return;
+});
 
-    if(player>computer)
-        winner = "Player"
-    else
-        winner= "Computer"
-    console.log(`The score is ${player}:${computer}. ${winner} wins!!!`)
-
-}
-
-
-game();
+//Game Logic
+scissorsButton.addEventListener('click', ()=>{
+    playerDisplay.textContent = "✂️";
+    let result = playRound(SCISSORS, computerDisplay)
+    if(result==1) {
+        updateScore(true);
+        player++;
+        checkScore(player, PLAYER); 
+    }
+    else if(result==0){
+        updateScore(false);
+        computer++;
+        checkScore(computer, COMPUTER); 
+    }
+    else return;
+});
+startButton.addEventListener('click', ()=>{
+    popup.setAttribute("style", "visibility:hidden;");
+});
